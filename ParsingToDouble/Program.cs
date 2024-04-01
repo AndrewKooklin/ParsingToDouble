@@ -18,6 +18,7 @@ namespace ParsingToDouble
                 "\nВведите число с плавающей точкой или запятой :");
 
                 string consoleInput = Console.ReadLine();
+                
                 double output = StringParsingToDouble(consoleInput);
                 if (Double.IsNaN(output))
                 {
@@ -46,11 +47,15 @@ namespace ParsingToDouble
             double output = 0;
             //int position = 0;
             //bool separatorFound = false;
-            int separatorIndex = 0;
+            //int separatorIndex = 0;
             bool negative = false;
             //bool exp = false;
 
-            if (input[0] == '-')
+            if(input.Length == 1 && input[0] == '-')
+            {
+                return Double.NaN;
+            }
+            else if (input.Length > 1 && input[0] == '-')
             {
                 negative = true;
             }
@@ -88,7 +93,11 @@ namespace ParsingToDouble
                 int j = 0;
                 //position = i;
                 char c = input[i];
-                if (!char.IsDigit(c))
+                if (Char.IsWhiteSpace(input[i]))
+                {
+                    return Double.NaN;
+                }
+                else if (!char.IsDigit(c))
                 {
                     if (c == '.' || c == ',')
                     {
@@ -158,7 +167,7 @@ namespace ParsingToDouble
                     else if (c == 'e' || c == 'E')
                     {
                         double outputMultiply = 0;
-                        exp = true;
+                        //exp = true;
                         
                         for (int k = i+1; k < input.Length; k++)
                         {

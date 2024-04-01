@@ -1,0 +1,7 @@
+C:\repos\ParsingToDouble\ParsingToDouble\obj\Debug\ParsingToDouble.csprojAssemblyReference.cache
+C:\repos\ParsingToDouble\ParsingToDouble\obj\Debug\ParsingToDouble.csproj.CoreCompileInputs.cache
+C:\repos\ParsingToDouble\ParsingToDouble\bin\Debug\ParsingToDouble.exe.config
+C:\repos\ParsingToDouble\ParsingToDouble\bin\Debug\ParsingToDouble.exe
+C:\repos\ParsingToDouble\ParsingToDouble\bin\Debug\ParsingToDouble.pdb
+C:\repos\ParsingToDouble\ParsingToDouble\obj\Debug\ParsingToDouble.exe
+C:\repos\ParsingToDouble\ParsingToDouble\obj\Debug\ParsingToDouble.pdb
