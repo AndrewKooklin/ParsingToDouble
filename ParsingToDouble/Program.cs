@@ -12,23 +12,24 @@ namespace ParsingToDouble
         {
             const double min = -1.7976931348623157E+308;
             const double max = 1.7976931348623157E+308;
+            ConsoleKeyInfo btn;
+            Console.WriteLine("Программа преобразования строки в тип \"Double\".");
+            Console.WriteLine("\nДля выхода из приложения нажмите \"Q\"");
+
             do
             {
-                Console.WriteLine("Программа преобразования строки в тип \"Double\"." +
-                "\nВведите число с плавающей точкой или запятой :");
+                Console.WriteLine("\nВведите число с плавающей точкой или запятой :");
 
                 string consoleInput = Console.ReadLine();
-                
+
                 double output = StringParsingToDouble(consoleInput);
                 if (Double.IsNaN(output))
                 {
-                    Console.WriteLine("Невозможно привести строку к типу \"Double\".");
-                    break;
+                    Console.WriteLine($"Невозможно привести строку \"{consoleInput}\" к типу \"Double\".");
                 }
-                else if(output > max || output < min)
+                else if (output > max || output < min)
                 {
                     Console.WriteLine("Число вышло за диапазон типа \"Double\".");
-                    break;
                 }
                 else
                 {
@@ -36,20 +37,15 @@ namespace ParsingToDouble
                                       $"\nк типу \"Double\" и будет иметь вид : {output}");
                 }
 
-                Console.WriteLine("Для выхода из приложения нажмите \"Esc\"");
-                Console.ReadKey();
+                btn = Console.ReadKey();
             }
-            while (Console.ReadKey().Key != ConsoleKey.Escape);
+            while (btn.Key != ConsoleKey.Q);
         }
 
         private static double StringParsingToDouble(string input)
         {
-            double output = 0;
-            //int position = 0;
-            //bool separatorFound = false;
-            //int separatorIndex = 0;
+            double output = 0d;
             bool negative = false;
-            //bool exp = false;
 
             if(input.Length == 1 && input[0] == '-')
             {
@@ -88,10 +84,14 @@ namespace ParsingToDouble
             //0.1e(E)+
             //0.1e(E)+123
 
+            double exp = 0d;
+            double outputMultiply = 0d;
+            double multiplyIntPart = 1d;
+
             for (int i = (negative ? 1 : 0); i < input.Length; i++)
             {
                 int j = 0;
-                //position = i;
+                
                 char c = input[i];
                 if (Char.IsWhiteSpace(input[i]))
                 {
@@ -101,12 +101,11 @@ namespace ParsingToDouble
                 {
                     if (c == '.' || c == ',')
                     {
-                        //separatorFound = true;
-                        //separatorIndex = i;
+                        double multiply = 10d;
                         for (j = i + 1; j < input.Length; j++)
                         {
                             c = input[j];
-                            int multiply = 10;
+                            
                             switch (c)
                             {
                                 case '0':
@@ -117,123 +116,130 @@ namespace ParsingToDouble
                                     }
                                 case '1':
                                     {
-                                        output += 1 / multiply;
+                                        output += (1d / multiply);
                                         break;
                                     }
                                 case '2':
                                     {
-                                        output += 2 / multiply;
+                                        output += (2d / multiply);
                                         break;
                                     }
                                 case '3':
                                     {
-                                        output += 3 / multiply;
+                                        output += (3d / multiply);
                                         break;
                                     }
                                 case '4':
                                     {
-                                        output += 4 / multiply;
+                                        output += (4d / multiply);
                                         break;
                                     }
                                 case '5':
                                     {
-                                        output += 5 / multiply;
+                                        output += (5d / multiply);
                                         break;
                                     }
                                 case '6':
                                     {
-                                        output += 6 / multiply;
+                                        output += (6d / multiply);
                                         break;
                                     }
                                 case '7':
                                     {
-                                        output += 7 / multiply;
+                                        output += (7d / multiply);
                                         break;
                                     }
                                 case '8':
                                     {
-                                        output += 8 / multiply;
+                                        output += (8d / multiply);
                                         break;
                                     }
                                 case '9':
                                     {
-                                        output += 9 / multiply;
+                                        output += (9d / multiply);
                                         break;
                                     }
                             }
-                            multiply *= 10;
+                            multiply *= 10d;
+                            if (c == 'e' || c == 'E')
+                            {
+                                for (int k = j; k < input.Length; k++)
+                                {
+                                    c = input[k];
+                                    if (c == '0' || c != '+' || c == 'e' || c == 'E' || c == ' ')
+                                    {
+                                        return Double.NaN;
+                                    }
+                                    else if (c == '+')
+                                    {
+                                        k++;
+                                        c = input[k];
+                                    }
+
+                                    double multiplyExp = 1d;
+                                    switch (c)
+                                    {
+                                        default:
+                                            {
+                                                output *= 1d;
+                                                return output;
+                                            }
+                                        case '1':
+                                            {
+                                                exp = (exp * multiplyExp) + 1d;
+                                                break;
+                                            }
+                                        case '2':
+                                            {
+                                                exp = (exp * multiplyExp) + 2d;
+                                                break;
+                                            }
+                                        case '3':
+                                            {
+                                                exp = (exp * multiplyExp) + 3d;
+                                                break;
+                                            }
+                                        case '4':
+                                            {
+                                                exp = (exp * multiplyExp) + 4d;
+                                                break;
+                                            }
+                                        case '5':
+                                            {
+                                                exp = (exp * multiplyExp) + 5d;
+                                                break;
+                                            }
+                                        case '6':
+                                            {
+                                                exp = (exp * multiplyExp) + 6d;
+                                                break;
+                                            }
+                                        case '7':
+                                            {
+                                                exp = (exp * multiplyExp) + 7d;
+                                                break;
+                                            }
+                                        case '8':
+                                            {
+                                                exp = (exp * multiplyExp) + 8d;
+                                                break;
+                                            }
+                                        case '9':
+                                            {
+                                                exp = (exp * multiplyExp) + 9d;
+                                                break;
+                                            }
+                                    }
+                                    multiplyExp *= 10d;
+                                }
+                                output *= Math.Pow(10d, exp);
+                            }
                         }
-                    }
-                    else if (c == 'e' || c == 'E')
-                    {
-                        double outputMultiply = 0;
-                        //exp = true;
-                        
-                        for (int k = i+1; k < input.Length; k++)
+                        if (negative)
                         {
-                            c = input[k];
-                            if (c == '0')
-                            {
-                                return output;
-                            }
-                            
-                            double multiply = 1;
-                            switch (c)
-                            {
-                                default:
-                                    {
-                                        output *= 1;
-                                        return output;
-                                    }
-                                case '1':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 1;
-                                        break;
-                                    }
-                                case '2':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 2;
-                                        break;
-                                    }
-                                case '3':
-                                    {
-                                        output = (outputMultiply * multiply) + 3;
-                                        break;
-                                    }
-                                case '4':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 4;
-                                        break;
-                                    }
-                                case '5':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 5;
-                                        break;
-                                    }
-                                case '6':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 6;
-                                        break;
-                                    }
-                                case '7':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 7;
-                                        break;
-                                    }
-                                case '8':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 8;
-                                        break;
-                                    }
-                                case '9':
-                                    {
-                                        outputMultiply = (outputMultiply * multiply) + 9;
-                                        break;
-                                    }
-                            }
-                            multiply *= 10;
+                            output *= -1d;
                         }
-                        output *= Math.Pow(10, outputMultiply);
+                        return output;
                     }
                     else
                     {
@@ -242,71 +248,68 @@ namespace ParsingToDouble
                 }
                 else
                 {
-                    double outputMultiply = 0;
-                    double multiply = 1;
                     switch (c)
                     {
                         case '0':
                         default:
                             {
-                                outputMultiply = 0;
+                                outputMultiply = 0d;
                                 break;
                             }
                         case '1':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 1;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 1d;
                                 break;
                             }
                         case '2':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 2;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 2d;
                                 break;
                             }
                         case '3':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 3;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 3d;
                                 break;
                             }
                         case '4':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 4;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 4d;
                                 break;
                             }
                         case '5':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 5;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 5d;
                                 break;
                             }
                         case '6':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 6;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 6d;
                                 break;
                             }
                         case '7':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 7;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 7d;
                                 break;
                             }
                         case '8':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 8;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 8d;
                                 break;
                             }
                         case '9':
                             {
-                                outputMultiply = (outputMultiply * multiply) + 9;
+                                outputMultiply = (outputMultiply * multiplyIntPart) + 9d;
                                 break;
                             }
                     }
-                    multiply *= 10;
+                    multiplyIntPart *= 10d;
                     output = outputMultiply;
                 }
+            }
 
-                if (negative)
-                {
-                    output *= -1;
-                }
-
+            if (negative)
+            {
+                output *= -1d;
             }
 
             return output;
