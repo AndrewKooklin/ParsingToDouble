@@ -41,40 +41,52 @@ namespace Parsing
                 negative = true;
             }
 
-            //a
+            // Варианты ввода
+            //first char or first char of string is not digit
             //-
+            //-.
+            //-.123
+            //-123
+            //-123.
+            //-123.
+            //-123.123
+            //-123e(E)0
+            //-123e(E)123
+            //-123e(E)+
+            //-123e(E)+123
             //.
+            //,
             //0
-            //0.
-            //0.123
-            //0.1e0
-            //0.1e123
             //123
             //123.123
+            //0.
+            //0.123
+            //0.1e(E)0
+            //0.1e(E)123
+            //0.1e(E)+
+            //0.1e(E)+123
 
             for (int i = (negative ? 1 : 0); i < input.Length; i++)  
             {
+                position = i;
                 char c = input[i];
-                if (!char.IsDigit(c))
-                {
-                    return Double.NaN;
-                }
-                
+
                 if (c == '.' || c == ',')
                 {
                     separatorFound = true;
                 }
-                else
+
+                if (!char.IsDigit(c))
                 {
-                    if (position > 0 && !char.IsDigit(c))
-                    {
-                        output += c;
-                    }
-                    else
-                    {
-                        return Double.NaN;
-                    }
+                    return Double.NaN;
                 }
+                else 
+                { 
+
+
+
+                }
+                
                 position ++;
             }
 
