@@ -10,7 +10,7 @@ namespace ParsingToDouble
     class Program
     {
         private static bool isExistE = false;
-        //private static bool outOfrange = false;
+        
         //const double min = -1.7976931348623157E+308;
         //const double max = 1.7976931348623157E+308;
         static void Main(string[] args)
@@ -199,9 +199,13 @@ namespace ParsingToDouble
                                 {
                                     return Double.NaN;
                                 }
-                                if ((c == '+' || c == '-') && !char.IsDigit(c))
+                                if ((c == '+' || c == '-'))
                                 {
-                                    return Double.NaN;
+                                    c = input[++j];
+                                    if (!char.IsDigit(c))
+                                    {
+                                        return Double.NaN;
+                                    }
                                 }
 
                                 double multiplyExp = 1d;
@@ -224,7 +228,7 @@ namespace ParsingToDouble
                                         case '0':
                                         default:
                                             {
-                                                output *= 10d;
+                                                exp *= 10d;
                                                 break;
                                             }
                                         case '1':
@@ -279,7 +283,11 @@ namespace ParsingToDouble
                                 {
                                     exp *= -1d;
                                 }
-                                output *= Math.Pow(10d, exp);
+                                if (negative)
+                                {
+                                    output *= -1d;
+                                }
+                                return output *= Math.Pow(10d, exp);
                             }
                         }
                         if (negative)
@@ -307,13 +315,13 @@ namespace ParsingToDouble
                         }
                         if ((c == '+' || c == '-'))
                         {
-                            ++i;
                             c = input[++i];
+                            if (!char.IsDigit(c))
+                            {
+                                return Double.NaN;
+                            }
                         }
-                        if (!char.IsDigit(c))
-                        {
-                            return Double.NaN;
-                        }
+                        
 
                         double multiplyExp = 1d;
 
@@ -390,6 +398,10 @@ namespace ParsingToDouble
                         {
                             exp *= -1d;
                         }
+                        if (negative)
+                        {
+                            output *= -1d;
+                        }
                         return output *= Math.Pow(10, exp);
                     }
                     else
@@ -455,12 +467,11 @@ namespace ParsingToDouble
                     }
                     multiplyIntPart = 10d;
                     output = outputMultiply;
+                    if (negative)
+                    {
+                        output *= -1d;
+                    }
                 }
-            }
-
-            if (negative)
-            {
-                output *= -1d;
             }
 
             return output;
