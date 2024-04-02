@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace ParsingToDouble
 {
     class Program
     {
+        private static bool isExistE = false;
+
         static void Main(string[] args)
         {
             const double min = -1.7976931348623157E+308;
@@ -20,9 +23,12 @@ namespace ParsingToDouble
             {
                 Console.WriteLine("\nВведите число с плавающей точкой или запятой :");
 
+                isExistE = false;
+
                 string consoleInput = Console.ReadLine();
 
                 double output = StringParsingToDouble(consoleInput);
+                
                 if (Double.IsNaN(output))
                 {
                     Console.WriteLine($"Невозможно привести строку \"{consoleInput}\" к типу \"Double\".");
@@ -31,10 +37,16 @@ namespace ParsingToDouble
                 {
                     Console.WriteLine("Число вышло за диапазон типа \"Double\".");
                 }
+                else if(isExistE)
+                {
+                    Console.WriteLine($"Строка {consoleInput} может быть приведена" +
+                                      $"\nк типу \"Double\" и будет иметь вид : " +
+                                      $"{output.ToString("0.###E+000", CultureInfo.InvariantCulture)}");
+                }
                 else
                 {
                     Console.WriteLine($"Строка {consoleInput} может быть приведена" +
-                                      $"\nк типу \"Double\" и будет иметь вид : {output}");
+                                      $"\nк типу \"Double\" и будет иметь вид : {Math.Round(output, 3)}");
                 }
 
                 btn = Console.ReadKey();
@@ -48,6 +60,14 @@ namespace ParsingToDouble
             bool negative = false;
 
             if(input.Length == 1 && input[0] == '-')
+            {
+                return Double.NaN;
+            }
+            if(char.IsWhiteSpace(input[0]))
+            {
+                return Double.NaN;
+            }
+            if (input.Contains<char>(' '))
             {
                 return Double.NaN;
             }
@@ -73,6 +93,7 @@ namespace ParsingToDouble
             //-123e(E)+123
             //0
             //0e
+            //0e+
             //0e0
             //0e123
             //123
@@ -163,10 +184,26 @@ namespace ParsingToDouble
                             multiply *= 10d;
                             if (c == 'e' || c == 'E')
                             {
+                                isExistE = true;
+
+                                if (j < input.Length - 1)
+                                {
+                                    c = input[++j];
+                                }
+                                
+                                if((c == '+' && j == input.Length - 1))
+                                {
+                                    return Double.NaN;
+                                }
+                                if ((c != '+') && !char.IsDigit(c))
+                                {
+                                    return Double.NaN;
+                                }
+
                                 for (int k = j; k < input.Length; k++)
                                 {
                                     c = input[k];
-                                    if (c == '0' || c != '+' || c == 'e' || c == 'E' || c == ' ')
+                                    if (!char.IsDigit(c) || c == ' ')
                                     {
                                         return Double.NaN;
                                     }
@@ -241,6 +278,91 @@ namespace ParsingToDouble
                         }
                         return output;
                     }
+                    else if (c == 'e' || c == 'E')
+                    {
+                        isExistE = true;
+
+                        if (i < input.Length - 1)
+                        {
+                            c = input[++i];
+                        }
+
+                        if ((c == '+' && i == input.Length - 1) || ((c != '+') && !char.IsDigit(c)))
+                        {
+                            return Double.NaN;
+                        }
+
+                        for (int k = i; k < input.Length; k++)
+                        {
+                            c = input[k];
+                            if (c == '0' || c == 'e' || c == 'E' || c == ' ')
+                            {
+                                return Double.NaN;
+                            }
+                            else if (c == '+')
+                            {
+                                k++;
+                                c = input[k];
+                            }
+
+                            double multiplyExp = 1d;
+                            switch (c)
+                            {
+                                default:
+                                    {
+                                        output *= 1d;
+                                        return output;
+                                    }
+                                case '1':
+                                    {
+                                        exp = (exp * multiplyExp) + 1d;
+                                        break;
+                                    }
+                                case '2':
+                                    {
+                                        exp = (exp * multiplyExp) + 2d;
+                                        break;
+                                    }
+                                case '3':
+                                    {
+                                        exp = (exp * multiplyExp) + 3d;
+                                        break;
+                                    }
+                                case '4':
+                                    {
+                                        exp = (exp * multiplyExp) + 4d;
+                                        break;
+                                    }
+                                case '5':
+                                    {
+                                        exp = (exp * multiplyExp) + 5d;
+                                        break;
+                                    }
+                                case '6':
+                                    {
+                                        exp = (exp * multiplyExp) + 6d;
+                                        break;
+                                    }
+                                case '7':
+                                    {
+                                        exp = (exp * multiplyExp) + 7d;
+                                        break;
+                                    }
+                                case '8':
+                                    {
+                                        exp = (exp * multiplyExp) + 8d;
+                                        break;
+                                    }
+                                case '9':
+                                    {
+                                        exp = (exp * multiplyExp) + 9d;
+                                        break;
+                                    }
+                            }
+                            multiplyExp = 10d;
+                        }
+                        return output *= Math.Pow(10, exp);
+                    }
                     else
                     {
                         return Double.NaN;
@@ -253,7 +375,7 @@ namespace ParsingToDouble
                         case '0':
                         default:
                             {
-                                outputMultiply = 0d;
+                                outputMultiply *= 10d;
                                 break;
                             }
                         case '1':
@@ -302,7 +424,7 @@ namespace ParsingToDouble
                                 break;
                             }
                     }
-                    multiplyIntPart *= 10d;
+                    multiplyIntPart = 10d;
                     output = outputMultiply;
                 }
             }
