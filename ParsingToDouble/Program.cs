@@ -10,9 +10,9 @@ namespace ParsingToDouble
     class Program
     {
         private static bool isExistE = false;
-        
-        //const double min = -1.7976931348623157E+308;
-        //const double max = 1.7976931348623157E+308;
+        private static bool negative = false;
+        const double min = -1.7976931348623157E+308;
+        const double max = 1.7976931348623157E+308;
         static void Main(string[] args)
         {
             ConsoleKeyInfo btn;
@@ -28,12 +28,17 @@ namespace ParsingToDouble
                 string consoleInput = Console.ReadLine();
 
                 double output = StringParsingToDouble(consoleInput);
+
+                if (negative)
+                {
+                    output *= -1d;
+                }
                 
                 if (Double.IsNaN(output))
                 {
                     Console.WriteLine($"Невозможно привести строку \"{consoleInput}\" к типу \"Double\".");
                 }
-                else if (Double.IsInfinity(output))
+                else if (Double.IsInfinity(output) || output < min || output > max)
                 {
                     Console.WriteLine("Число вышло за диапазон типа \"Double\".");
                 }
@@ -57,7 +62,6 @@ namespace ParsingToDouble
         private static double StringParsingToDouble(string input)
         {
             double output = 0d;
-            bool negative = false;
             bool negativeExp = false;
 
             if (input.Length == 1 && input[0] == '-')
@@ -109,6 +113,7 @@ namespace ParsingToDouble
             double exp = 0d;
             double outputMultiply = 0d;
             double multiplyIntPart = 1d;
+            decimal fraction = 0m;
 
             for (int i = (negative ? 1 : 0); i < input.Length; i++)
             {
@@ -123,7 +128,7 @@ namespace ParsingToDouble
                 {
                     if (c == '.' || c == ',')
                     {
-                        double multiply = 10d;
+                        decimal multiply = 10;
                         for (j = i + 1; j < input.Length; j++)
                         {
                             c = input[j];
@@ -133,56 +138,57 @@ namespace ParsingToDouble
                                 case '0':
                                 default:
                                     {
-                                        output += 0;
+                                        fraction += 0m;
                                         break;
                                     }
                                 case '1':
                                     {
-                                        output += (1d / multiply);
+                                        fraction += (1m / multiply);
                                         break;
                                     }
                                 case '2':
                                     {
-                                        output += (2d / multiply);
+                                        fraction += (2m / multiply);
                                         break;
                                     }
                                 case '3':
                                     {
-                                        output += (3d / multiply);
+                                        fraction += (3m / multiply);
                                         break;
                                     }
                                 case '4':
                                     {
-                                        output += (4d / multiply);
+                                        fraction += (4m / multiply);
                                         break;
                                     }
                                 case '5':
                                     {
-                                        output += (5d / multiply);
+                                        fraction += (5m / multiply);
                                         break;
                                     }
                                 case '6':
                                     {
-                                        output += (6d / multiply);
+                                        fraction += (6m / multiply);
                                         break;
                                     }
                                 case '7':
                                     {
-                                        output += (7d / multiply);
+                                        fraction += (7m / multiply);
                                         break;
                                     }
                                 case '8':
                                     {
-                                        output += (8d / multiply);
+                                        fraction += (8m / multiply);
                                         break;
                                     }
                                 case '9':
                                     {
-                                        output += (9d / multiply);
+                                        fraction += (9m / multiply);
                                         break;
                                     }
                             }
-                            multiply *= 10d;
+                            multiply *= 10m;
+
                             if (c == 'e' || c == 'E')
                             {
                                 isExistE = true;
@@ -283,17 +289,13 @@ namespace ParsingToDouble
                                 {
                                     exp *= -1d;
                                 }
-                                if (negative)
-                                {
-                                    output *= -1d;
-                                }
-                                return output *= Math.Pow(10d, exp);
+                                
+                                output += (Double)fraction;
+                                return output *= Math.Pow(10, exp);
                             }
                         }
-                        if (negative)
-                        {
-                            output *= -1d;
-                        }
+                         
+                        output += (Double)fraction;
                         return output;
                     }
                     else if (c == 'e' || c == 'E')
@@ -398,10 +400,6 @@ namespace ParsingToDouble
                         {
                             exp *= -1d;
                         }
-                        if (negative)
-                        {
-                            output *= -1d;
-                        }
                         return output *= Math.Pow(10, exp);
                     }
                     else
@@ -465,12 +463,9 @@ namespace ParsingToDouble
                                 break;
                             }
                     }
+
                     multiplyIntPart = 10d;
                     output = outputMultiply;
-                    if (negative)
-                    {
-                        output *= -1d;
-                    }
                 }
             }
 
