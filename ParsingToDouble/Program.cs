@@ -358,7 +358,6 @@ namespace ParsingToDouble
                             }
                         }
                         
-
                         double multiplyExp = 1d;
 
                         for (int k = i; k < input.Length; k++)
