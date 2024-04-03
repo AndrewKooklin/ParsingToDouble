@@ -11,17 +11,22 @@ namespace ParsingToDouble
     {
         private static bool isExistE = false;
         private static bool negative = false;
+        private static bool positive = false;
+        private static int inc = 0;
         const double min = -1.7976931348623157E+308;
         const double max = 1.7976931348623157E+308;
+
         static void Main(string[] args)
         {
             ConsoleKeyInfo btn;
             Console.WriteLine("Программа преобразования строки в тип \"Double\".");
-            Console.WriteLine("\nДля выхода из приложения нажмите \"Q\"");
+            Console.WriteLine("\nДля выхода из приложения нажмите \"Q\"\n");
 
             do
             {
-                Console.WriteLine("\nВведите число с плавающей точкой или запятой :");
+                Console.WriteLine("(Максимальное количество знаков после запятой = 16," +
+                                  "\nвывод округляется до 15 знака после запятой.)" +
+                                  "\nВведите число с плавающей точкой или запятой :");
 
                 isExistE = false;
 
@@ -36,22 +41,39 @@ namespace ParsingToDouble
                 
                 if (Double.IsNaN(output))
                 {
-                    Console.WriteLine($"Невозможно привести строку \"{consoleInput}\" к типу \"Double\".");
+                    Console.WriteLine($"\nНевозможно привести строку \"{consoleInput}\" к типу \"Double\".");
                 }
                 else if (Double.IsInfinity(output) || output < min || output > max)
                 {
-                    Console.WriteLine("Число вышло за диапазон типа \"Double\".");
+                    Console.WriteLine("\nЧисло вышло за диапазон типа \"Double\".");
                 }
                 else if(isExistE)
                 {
-                    Console.WriteLine($"Строка {consoleInput} может быть приведена" +
+                    if (positive)
+                    {
+                        Console.WriteLine($"\nСтрока {consoleInput} может быть приведена" +
                                       $"\nк типу \"Double\" и будет иметь вид : " +
-                                      $"{output.ToString("0.###E+000", CultureInfo.InvariantCulture)}");
+                                      $"+{output.ToString("E15", CultureInfo.InvariantCulture)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\nСтрока {consoleInput} может быть приведена" +
+                                      $"\nк типу \"Double\" и будет иметь вид : " +
+                                      $"{output.ToString("E15", CultureInfo.InvariantCulture)}");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Строка {consoleInput} может быть приведена" +
-                                      $"\nк типу \"Double\" и будет иметь вид : {Math.Round(output, 3)}");
+                    if (positive)
+                    {
+                        Console.WriteLine($"\nСтрока {consoleInput} может быть приведена" +
+                                      $"\nк типу \"Double\" и будет иметь вид : +{output}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\nСтрока {consoleInput} может быть приведена" +
+                                          $"\nк типу \"Double\" и будет иметь вид : {output}");
+                    }
                 }
 
                 btn = Console.ReadKey();
@@ -61,8 +83,41 @@ namespace ParsingToDouble
 
         private static double StringParsingToDouble(string input)
         {
+            // Варианты ввода
+            //first char or first char of string is not digit
+            //-
+            //+
+            //.
+            //,
+            //-.
+            //-(+).123
+            //-(+)123
+            //-(+)123.
+            //-(+)123.
+            //-(+)123.123
+            //-(+)123e(E)0
+            //-(+)123e(E)123
+            //-(+)123e(E)+
+            //-(+)123e(E)-(+)123
+            //0
+            //0e
+            //0e-(+)
+            //0e0
+            //0e(E)123
+            //123
+            //123.123
+            //0.
+            //0.123
+            //0.1e(E)0
+            //0.1e(E)123
+            //0.1e(E)-(+)
+            //0.1e(E)-(+)123
+
             double output = 0d;
             bool negativeExp = false;
+            negative = false;
+            positive = false;
+            inc = 0;
 
             if (input.Length == 1 && input[0] == '-')
             {
@@ -80,42 +135,21 @@ namespace ParsingToDouble
             {
                 negative = true;
             }
-
-            // Варианты ввода
-            //first char or first char of string is not digit
-            //-
-            //.
-            //,
-            //-.
-            //-.123
-            //-123
-            //-123.
-            //-123.
-            //-123.123
-            //-123e(E)0
-            //-123e(E)123
-            //-123e(E)+
-            //-123e(E)+123
-            //0
-            //0e
-            //0e+
-            //0e0
-            //0e123
-            //123
-            //123.123
-            //0.
-            //0.123
-            //0.1e(E)0
-            //0.1e(E)123
-            //0.1e(E)+
-            //0.1e(E)+123
+            else if(input.Length > 1 && input[0] == '+')
+            {
+                positive = true;
+            }
 
             double exp = 0d;
             double outputMultiply = 0d;
             double multiplyIntPart = 1d;
             decimal fraction = 0m;
-
-            for (int i = (negative ? 1 : 0); i < input.Length; i++)
+            
+            if(negative || positive)
+            {
+                inc = 1;
+            }
+            for (int i = inc; i < input.Length; i++)
             {
                 int j = 0;
                 
@@ -289,14 +323,14 @@ namespace ParsingToDouble
                                 {
                                     exp *= -1d;
                                 }
-                                
-                                output += (Double)fraction;
-                                return output *= Math.Pow(10, exp);
+
+                                output += (double)fraction;
+                                output *= Math.Pow(10, exp);
+                                return  output;
                             }
                         }
-                         
-                        output += (Double)fraction;
-                        return output;
+
+                        return output += (double)fraction;
                     }
                     else if (c == 'e' || c == 'E')
                     {
